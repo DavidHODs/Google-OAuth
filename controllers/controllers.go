@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"text/template"
 
 	"github.com/DavidHODs/Google-OAuth/utils"
 	"golang.org/x/oauth2"
@@ -88,5 +89,20 @@ func Callback(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(res, "success: %s is a verified user\n", authStruct.Email)
 	} else {
 		fmt.Fprint(res, "failed verification")
+	}
+}
+
+// RenderPage renders a simple HTML page to try out Google Sign-On
+func RenderPage(res http.ResponseWriter, req *http.Request) {
+	tmpl, err := template.ParseFiles("assets/index.html")
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(res, nil)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
